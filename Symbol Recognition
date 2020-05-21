@@ -1,0 +1,86 @@
+import cv2
+import numpy as np
+
+font = cv2.FONT_HERSHEY_COMPLEX
+cap = cv2.VideoCapture(0)
+template1 = cv2.imread("Slide1.PNG", cv2.IMREAD_COLOR)
+template2 = cv2.imread("Slide2.PNG", cv2.IMREAD_COLOR)
+template3 = cv2.imread("Slide3.PNG", cv2.IMREAD_COLOR)
+template4 = cv2.imread("Slide4.PNG", cv2.IMREAD_COLOR)
+template5 = cv2.imread("Slide5.PNG", cv2.IMREAD_GRAYSCALE)
+template6 = cv2.imread("Slide6.PNG", cv2.IMREAD_GRAYSCALE)
+template7 = cv2.imread("Slide7.PNG", cv2.IMREAD_GRAYSCALE)
+template8 = cv2.imread("Slide8.PNG", cv2.IMREAD_GRAYSCALE)
+template9 = cv2.imread("Slide10.PNG", cv2.IMREAD_REDUCED_GRAYSCALE_4)
+
+w, h = template5.shape[::-1]
+x, y = template9.shape[::-1]
+
+while (True):
+    ret, frame = cap.read()
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    original = cv2.cvtColor(frame, cv2.IMREAD_COLOR)
+
+    resyel = cv2.matchTemplate(original, template1, cv2.TM_CCOEFF_NORMED)
+    resred = cv2.matchTemplate(original, template2, cv2.TM_CCOEFF_NORMED)
+    resblue = cv2.matchTemplate(original, template3, cv2.TM_CCOEFF_NORMED)
+    resgreen = cv2.matchTemplate(original, template4, cv2.TM_CCOEFF_NORMED)
+    res2 = cv2.matchTemplate(gray_frame, template5, cv2.TM_CCOEFF_NORMED)
+    res3 = cv2.matchTemplate(gray_frame, template6, cv2.TM_CCOEFF_NORMED)
+    res4 = cv2.matchTemplate(gray_frame, template7, cv2.TM_CCOEFF_NORMED)
+    res5 = cv2.matchTemplate(gray_frame, template8, cv2.TM_CCOEFF_NORMED)
+    res6 = cv2.matchTemplate(gray_frame, template9, cv2.TM_CCOEFF_NORMED)
+
+
+
+    locy = np.where(resyel >= 0.86)
+    locr = np.where(resred >= 0.86)
+    locb = np.where(resblue >= 0.86)
+    locg = np.where(resgreen >= 0.86)
+    loc1 = np.where(res2 >= 0.6)
+    loc2 = np.where(res3 >= 0.6)
+    loc3 = np.where(res4 >= 0.6)
+    loc4 = np.where(res5 >= 0.6)
+    loc5 = np.where(res6 >= 0.6)
+
+
+
+    for pt in zip(*locy[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Yellow Color Symbol", (w, h), font, 0.5, (0,0,255), 1, cv2.LINE_AA)
+    for pt in zip(*locr[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Red Color Symbol", (w, h), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+    for pt in zip(*locb[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Blue Color Symbol", (w, h), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+    for pt in zip(*locg[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Green Color Symbol", (w, h), font, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+    for pt in zip(*loc1[::-1]):
+        cv2.rectangle(frame, pt,(pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Distance ?", (w, h), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+    for pt in zip(*loc2[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Traffic Light", (w, h), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+    for pt in zip(*loc3[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Scoring goal", (w, h), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+    for pt in zip(*loc4[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+        cv2.putText(frame, "Ramp angle", (w, h), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+    for pt in zip(*loc5[::-1]):
+        cv2.rectangle(frame, pt, (pt[0] + x, pt[1] + y), (0, 255, 0), 2)
+        cv2.putText(frame, "Push Button", (x, y), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
+
+
+    cv2.imshow("Frame", frame)
+
+    key = cv2.waitKey(1)
+
+    if key == 27:
+        break
+
+cap.release()
+cv2.destroyWindow()
